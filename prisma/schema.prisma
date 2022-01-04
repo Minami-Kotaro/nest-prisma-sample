@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model m_contract_managers {
+  contract_manager_id           Int           @id(map: "m_contract_managers_pkc")
+  contract_manager_name         String        @db.VarChar(24)
+  contract_manager_mail_address String        @db.VarChar(256)
+  create_date                   DateTime      @db.Timestamp(6)
+  update_date                   DateTime      @db.Timestamp(6)
+  m_contracts                   m_contracts[]
+}
+
+model m_contracts {
+  contract_id         Int                 @id(map: "m_contracts_pkc")
+  contractor_name     String              @db.VarChar(24)
+  contract_manager_id Int
+  user_id             Int
+  renewal_count       Int
+  sales_staff_name    String              @db.VarChar(24)
+  contract_date       DateTime            @db.Timestamp(6)
+  valid_start_date    DateTime            @db.Timestamp(6)
+  valid_end_date      DateTime            @db.Timestamp(6)
+  is_deleted          Boolean
+  create_date         DateTime            @db.Timestamp(6)
+  update_date         DateTime            @db.Timestamp(6)
+  m_contract_managers m_contract_managers @relation(fields: [contract_manager_id], references: [contract_manager_id], onDelete: NoAction, onUpdate: NoAction, map: "m_contracts_fk2")
+  m_users             m_users             @relation(fields: [user_id], references: [user_id],onDelete: NoAction, onUpdate: NoAction, map: "m_contracts_fk1")
+}
+
+model m_managers {
+  manager_id           Int      @id(map: "m_managers_pkc")
+  manager_name         String   @db.VarChar(24)
+  manager_mail_address String   @unique(map: "m_managers_ix1") @db.VarChar(256)
+  password             String   @db.VarChar(60)
+  create_date          DateTime @db.Timestamp(6)
+  update_date          DateTime @db.Timestamp(6)
+}
+
+model m_users {
+  user_id           Int           @id(map: "m_users_pkc")
+  user_name         String        @db.VarChar(24)
+  user_mail_address String        @db.VarChar(256)
+  create_date       DateTime      @db.Timestamp(6)
+  update_date       DateTime      @db.Timestamp(6)
+  m_contracts       m_contracts[]
+}
